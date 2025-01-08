@@ -27,6 +27,9 @@ fi
 
 while read -r line; do
     if echo "$line" | grep -F = &>/dev/null; then
+        if echo "$line" | grep -E '^\s*#' &>/dev/null; then
+            continue
+        fi
         line1=$(echo "$line" | tr -d '[:space:]')
         varname=$(echo "$line1" | cut -d '=' -f 1)
         config[$varname]=$(echo "$line1" | cut -d '=' -f 2-)
