@@ -13,7 +13,7 @@ config=(
 )
 
 usage() {
-    echo "Usage: twitch <channel or url> [quality] [\"streamlink options\"]" >&2
+    echo "Usage: twitchmpv <channel or url> [quality] [\"streamlink options\"]" >&2
 }
 
 error() {
