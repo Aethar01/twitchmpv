@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+CONFIG_FILE="$HOME/.config/twitchmpv/config"
+CHANNEL=$1
+QUALITY=$2
+STREAMLINKOPTS=$3
+
+typeset -A config
+config=(
+    [twitchOauth]="" # Twitch OAuth token
+    [twitchClientId]="" # Twitch Client ID
+    [defaultQuality]="best" # Default quality
+)
+
+usage() {
+    echo "Usage: twitch <channel or url> [quality] [\"streamlink options\"]" >&2
+}
+
+error() {
+    echo "Error: $1" >&2
+    exit 1
+}
+
+if [ ! -f "$CONFIG_FILE" ]; then
+    error "Config file not found: $CONFIG_FILE"
+fi
+
+while read -r line; do
+    if echo "$line" | grep -F = &>/dev/null; then
+        line1=$(echo "$line" | tr -d '[:space:]')
+        varname=$(echo "$line1" | cut -d '=' -f 1)
+        config[$varname]=$(echo "$line1" | cut -d '=' -f 2-)
+    fi
+done < "$CONFIG_FILE"
+
+if [ -z "$CHANNEL" ]; then
+    usage
+    exit 1
+fi
+
+if [ -z "$QUALITY" ]; then
+    QUALITY="${config[defaultQuality]}"
+fi
+
+if ! [ -x "$(command -v streamlink)" ]; then
+    error "streamlink is not installed"
+fi
+
+# if vod then accept channel as url
+# Get the stream URL
+if [[ $CHANNEL == *"twitch.tv"* ]]; then
+    STREAM_URL="$CHANNEL"
+else
+    STREAM_URL="https://www.twitch.tv/$CHANNEL"
+fi
+
+if [ -z "$STREAMLINKOPTS" ]; then
+    streamlink -p mpv --twitch-disable-ads --twitch-api-header "Authorization=OAuth ${config[twitchOauth]}" --twitch-api-header "Client-Id=${config[twitchClientId]}" "$STREAM_URL" "$QUALITY" & disown
+else
+    streamlink -p mpv --twitch-disable-ads --twitch-api-header "Authorization=OAuth ${config[twitchOauth]}" --twitch-api-header "Client-Id=${config[twitchClientId]}" "$STREAM_URL" "$QUALITY" "$STREAMLINKOPTS" & disown
+fi
