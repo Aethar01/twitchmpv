@@ -19,7 +19,20 @@ yay -S twitchmpv-git
 
 ## Usage
 ```bash
-twitchmpv <channel or url> [quality] ["streamlink options"]
+   Usage: twitchmpv -n|--name <channel name or url> [options] -- [streamlink arguments]
+
+   Watch Twitch streams with mpv using streamlink.
+
+   Options:
+   -h, --help              Show this help message and exit
+   -c, --config            Set the path to the config file
+   -q, --quality           Set the quality of the stream
+   -n, --name              Set the name of the twitch channel, can also be a twitch url. Required.
+   -a, --audio-only        Disable video playback
+   -d, --disown            Disown the process (if you run with -v and -d, you can only kill the process manually)
+   -s, --silent            Run streamlink in silent mode
+   -v, --verbose           Print debug information
+   --                      Pass additional arguments to streamlink
 ```
 
 ### Config file
@@ -29,5 +42,8 @@ You can create a config file at `$HOME/.config/twitchmpv/config` to set your twi
 twitchOauth = abcdefghijklmnopqrstuvwxyz
 twitchClientId = abcdefghijklmnopqrstuvwxyz
 defaultQuality = best
+disown = (0|1)
+silent = (0|1)
+noVideo = (0|1)
 ```
 
