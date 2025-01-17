@@ -18,7 +18,7 @@ yay -S twitchmpv-git
 ```
 
 ## Usage
-```bash
+```
    Usage: twitchmpv -n|--name <channel name or url> [options] -- [streamlink arguments]
 
    Watch Twitch streams with mpv using streamlink.
