@@ -45,5 +45,6 @@ defaultQuality = best
 disown = (0|1)
 silent = (0|1)
 noVideo = (0|1)
+lowLatency = (0|1)
 ```
 
