@@ -7,8 +7,8 @@ args() {
         shift
     fi
 
-    local options="hc:q:n:adsv"
-    local longoptions="help,config:,quality:,name:,audio-only,disown,silent,verbose"
+    local options="hc:q:n:adsvl"
+    local longoptions="help,config:,quality:,name:,audio-only,disown,silent,verbose,low-latency"
     local parsed_args
     parsed_args=$(getopt -o $options --long $longoptions -n "$(basename "$0")" -- "$@")
 
@@ -44,6 +44,9 @@ args() {
             -v | --verbose)
                 DEBUG=1
                 ;;
+            -l | --low-latency)
+                LOW_LATENCY=1
+                ;;
             --)
                 shift
                 # add all remaining arguments to array of arguments
@@ -76,6 +79,7 @@ usage() {
     -d, --disown            Disown the process (if you run with -v and -d, you can only kill the process manually)
     -s, --silent            Run streamlink in silent mode
     -v, --verbose           Print debug information
+    -l, --low-latency       Enable low latency mode
     --                      Pass additional arguments to streamlink
 EOF
 }
@@ -139,6 +143,10 @@ load_config() {
         QUALITY="${config[defaultQuality]}"
         info "Quality set to $QUALITY"
     fi
+    if [ -z "$LOW_LATENCY" ]; then
+        LOW_LATENCY="${config[lowLatency]}"
+        info "Low latency set to $LOW_LATENCY"
+    fi
 }
 
 check_channel() {
@@ -164,6 +172,9 @@ check_streamlink_opts() {
     fi
     if [ "$SILENT" == 1 ]; then
         OPT_ARRAY+=(-Q)
+    fi
+    if [ "$LOW_LATENCY" == 1 ]; then
+        OPT_ARRAY+=(--twitch-low-latency)
     fi
     info "Streamlink options: ${OPT_ARRAY[*]}"
 }
@@ -194,6 +205,7 @@ config=(
     [disown]=0
     [noVideo]=0
     [silent]=0
+    [lowLatency]=0
 )
 
 args "$@"
