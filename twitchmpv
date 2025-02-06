@@ -95,6 +95,10 @@ info() {
     fi
 }
 
+warn() {
+    echo "Warning: $*" >&2
+}
+
 check_dependencies() {
     if ! [ -x "$(command -v streamlink)" ]; then
         error "streamlink is not installed"
@@ -113,19 +117,21 @@ check_config_file() {
 
 load_config() {
     if [ ! -f "$CONFIG_FILE" ]; then
-        error "Config file not found: $CONFIG_FILE"
+        warn "Config file not found: $CONFIG_FILE"
     fi
-    info "Loading config file: $CONFIG_FILE"
-    while read -r line; do
-        if echo "$line" | grep -F = &>/dev/null; then
-            if echo "$line" | grep -E '^\s*#' &>/dev/null; then
-                continue
+    if [ -r "$CONFIG_FILE" ]; then
+        info "Loading config file: $CONFIG_FILE"
+        while read -r line; do
+            if echo "$line" | grep -F = &>/dev/null; then
+                if echo "$line" | grep -E '^\s*#' &>/dev/null; then
+                    continue
+                fi
+                line1=$(echo "$line" | tr -d '[:space:]')
+                varname=$(echo "$line1" | cut -d '=' -f 1)
+                config[$varname]=$(echo "$line1" | cut -d '=' -f 2-)
             fi
-            line1=$(echo "$line" | tr -d '[:space:]')
-            varname=$(echo "$line1" | cut -d '=' -f 1)
-            config[$varname]=$(echo "$line1" | cut -d '=' -f 2-)
-        fi
-    done < "$CONFIG_FILE"
+        done < "$CONFIG_FILE"
+    fi
     
     if [ -z "$DISOWN" ]; then
         DISOWN="${config[disown]}"
