@@ -32,6 +32,7 @@ yay -S twitchmpv-git
    -d, --disown            Disown the process (if you run with -v and -d, you can only kill the process manually)
    -s, --silent            Run streamlink in silent mode
    -v, --verbose           Print debug information
+   -l, --low-latency       Enable low latency mode
    --                      Pass additional arguments to streamlink
 ```
 
