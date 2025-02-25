@@ -76,7 +76,7 @@ usage() {
     -q, --quality           Set the quality of the stream
     -n, --name              Set the name of the twitch channel, can also be a twitch url. Required.
     -a, --audio-only        Disable video playback
-    -d, --disown            Disown the process (if you run with -v and -d, you can only kill the process manually)
+    -d, --disown            Disown the process (if you run with -a and -d, you can only kill the process manually)
     -s, --silent            Run streamlink in silent mode
     -v, --verbose           Print debug information
     -l, --low-latency       Enable low latency mode
