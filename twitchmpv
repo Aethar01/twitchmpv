@@ -7,8 +7,8 @@ args() {
         shift
     fi
 
-    local options="hc:q:n:adsvl"
-    local longoptions="help,config:,quality:,name:,audio-only,disown,silent,verbose,low-latency"
+    local options="hc:q:n:adsvli"
+    local longoptions="help,config:,quality:,name:,audio-only,disown,silent,verbose,low-latency,ignore-config"
     local parsed_args
     parsed_args=$(getopt -o $options --long $longoptions -n "$(basename "$0")" -- "$@")
 
@@ -47,6 +47,9 @@ args() {
             -l | --low-latency)
                 LOW_LATENCY=1
                 ;;
+            -i | --ignore-config)
+                IGNORE_CONFIG=1
+                ;;
             --)
                 shift
                 # add all remaining arguments to array of arguments
@@ -80,6 +83,7 @@ usage() {
     -s, --silent            Run streamlink in silent mode
     -v, --verbose           Print debug information
     -l, --low-latency       Enable low latency mode
+    -i, --ignore-config     Ignore the config file except for the oauth and client id
     --                      Pass additional arguments to streamlink
 EOF
 }
@@ -124,6 +128,9 @@ load_config() {
         while read -r line; do
             if echo "$line" | grep -F = &>/dev/null; then
                 if echo "$line" | grep -E '^\s*#' &>/dev/null; then
+                    continue
+                fi
+                if [ "$IGNORE_CONFIG" == 1 ] && ! echo "$line" | grep -E '^(twitchOauth|twitchClientId)' &>/dev/null; then
                     continue
                 fi
                 line1=$(echo "$line" | tr -d '[:space:]')
